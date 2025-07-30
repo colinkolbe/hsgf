@@ -1,0 +1,17 @@
+[build]
+rustflags = [
+	"-C", "llvm-args=--inline-threshold=2000",
+	"-C", "target-cpu=native",
+]
+
+# Apple specific requirements
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+[target.aarch64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]

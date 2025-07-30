@@ -1,0 +1,16 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "hsgf"
+description = "Hierarchical Search Graph Framework (HSGF)"
+authors = [{ name = "Colin Kolbe" }]
+requires-python = ">=3.8"
+classifiers = ["Programming Language :: Rust"]
+dynamic = ["version"]
+
+[tool.maturin]
+manifest-path = "Cargo.toml"
+features = ["python"]
+profile = "release"

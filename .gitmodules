@@ -1,0 +1,6 @@
+[submodule "GraphIndexAPI"]
+	path = GraphIndexAPI
+	url = git@github.com:eth42/GraphIndexAPI.git
+[submodule "GraphIndexBaselines"]
+	path = GraphIndexBaselines
+	url = git@github.com:eth42/GraphIndexBaselines.git
