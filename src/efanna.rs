@@ -1,5 +1,5 @@
 //! Efanna graph crate
-//! See [GitHub](https://github.com/ZJULearning/efanna_graph)
+//! Reimplementation of [GitHub](https://github.com/ZJULearning/efanna_graph)
 //!
 //! Contains
 //!     - EfannaBuilder (single-threaded)
@@ -30,6 +30,8 @@
 //!
 //! --------------------------
 //! LICENSE of source code of Efanna could not be found
+//! Although, this is code is a reimplementation so this license is more for reference and not 
+//! necessarily binding, see, however, this project's (MIT) License in the root folder.
 //!
 //! However, the source code is part of a public GitHub repository (see link above) as part of the
 //! published paper [Arxiv](https://arxiv.org/abs/1609.07228).

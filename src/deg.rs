@@ -1,5 +1,5 @@
 //! DEG graph crate  
-//! See [crEG/DEG on GitHub](https://github.com/Visual-Computing/DynamicExplorationGraph)
+//! Reimplementation of [crEG/DEG on GitHub](https://github.com/Visual-Computing/DynamicExplorationGraph)
 //!
 //! Contains
 //!     - DEGBuilder  
@@ -7,7 +7,7 @@
 //!
 //! Notes
 //!     - While a version for `search_range` and `has_path_range` is implemented (following the
-//!       graphindexbaselines implementation and the DEG paper), the original greedy `search`
+//!       GraphIndexBaselines implementation and the DEG paper), the original greedy `search`
 //!       and a derived 'has_path' version are used as they have shown to be significantly faster
 //!       than our range implementations  
 //!     - Significant differences/changes:
@@ -54,7 +54,10 @@
 //! TODOs
 //!
 //! --------------------------
-//! LICENSE of source code of DEG
+//! LICENSE of source code of DEG 
+//! Although, this is code is a reimplementation so this license is more for reference and not 
+//! necessarily binding, see, however, this project's (MIT) License in the root folder.
+//! 
 //! MIT License
 //!
 //! Copyright (c) 2024 Visual Computing Group

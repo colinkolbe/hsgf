@@ -1,5 +1,5 @@
 //! NSSG graph crate
-//! See [SSG/NSSG on GitHub](https://github.com/ZJULearning/SSG/tree/master)
+//! Reimplementation of [SSG/NSSG on GitHub](https://github.com/ZJULearning/SSG/tree/master)
 //!
 //! Contains
 //!     - NSSGBuilder (single threaded)
@@ -34,6 +34,9 @@
 //!
 //! --------------------------
 //! LICENSE of source code of SSG
+//! Although, this is code is a reimplementation so this license is more for reference and not 
+//! necessarily binding, see, however, this project's (MIT) License in the root folder.
+//! 
 //! BSD 3-Clause License
 //!
 //! Copyright (c) 2019, Cong Fu

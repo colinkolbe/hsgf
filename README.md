@@ -5,17 +5,17 @@ The Hierarchical Search Graph Framework (HSGF) is the main contribution of a mas
 This project is build on the framework that is the GraphIndexAPI crate and follows closely the patterns of GraphIndexBaselines crate and can, therefore, be seen as an extension to the latter.
 
 ## Contents
+
 - `/src` 
-    - hsgf Rust code
+    - hsgf code
+    - See more information further down in this README
 - `/GraphIndexAPI`
-    - External library [GitHub](https://github.com/eth42/GraphIndexAPI)
-    - Uses its own hsgf branch, which has integrated the latest changes of main
+    - Uses a fork of the external library [GitHub](https://github.com/eth42/GraphIndexAPI)
         - Current diff is virtually zero
     - Some useful explainers
         - WUnDirLoLGraph: Weighted Un-Directed List-of-List Graph
 - `/GraphIndexBaselines`
-    - External library [GitHub](https://github.com/eth42/GraphIndexBaselines)
-    - Uses its own hsgf branch, which has integrated the latest changes of master
+    - Uses a fork of the external library [GitHub](https://github.com/eth42/GraphIndexBaselines)
         - Current diff is virtually zero
 - `/evaluation`
     - Evaluation related files (see local README)
@@ -32,6 +32,46 @@ maturin develop
 # In one line:
 # python3 -m venv .env; source .env/bin/activate; pip install -r py_requirements.txt; maturin develop
 ```
+
+## HSGF - Crate
+
+- About hierarchy (ANNS) graphs..
+    - A hierarchy graphs consist of multiple (>1) graphs which are stacked vertically on each other and each level-graph contains a subset of the previous layer. With the bottom layer/level/graph containing all points of the training data
+    - The HSGF builds hierarchy graphs which are similar to [HNSW](https://ieeexplore.ieee.org/document/8594636) but HSGF uses existing graphs and constructs hierarchy graphs from the bottom-level sequentially up
+    - The HSGF adds relatively minimal overhead due to the significantly smaller (level-)subset-sizes on levels above the bottom level (0.5-5% of the training data is only contained on the second level already)
+
+- General
+    - Each graph builder
+        - Has a single and parallel version
+        - Where the single one is closer to the original reimplemented code base, while the parallel one has fewer or none of the original code comments and is generally more optimized 
+    - Building hierarchy graphs from the bottom up
+        - Allows to specify (available) graph builders and subset selectors for each level
+    - One trait definition for the HSGFStyleBuilder, which can be either an Enum- or a ClosureStyleBuilder
+    
+- DEG
+    - Reimplementation of [GitHub](https://github.com/Visual-Computing/DynamicExplorationGraph/)
+    - Based on the main branch, specifically commit `305e121`
+        - Specifically relevant for the re-implementation is [builder.h](https://github.com/Visual-Computing/DynamicExplorationGraph/blob/main/cpp/deglib/include/builder.h)
+        - Important, this corresponds to the latest version of the DEG by the authors, and not the later renamed (and original) crEG implementation. However, we expect the latest version to also be the most performant.
+- (N)SSG
+    - Reimplementation of [GitHub](https://github.com/ZJULearning/SSG/)
+    - Based on the master branch, specifically commit `f573041`
+        - Specifically relevant for the re-implementation is [index_ssg.cpp](https://github.com/ZJULearning/SSG/blob/master/src/index_ssg.cpp)
+- Efanna 
+    - Reimplementation of [GitHub](https://github.com/ZJULearning/efanna_graph)
+    - Based on the master branch, specifically commit `50c4445`
+        - Specifically relevant for the re-implementation is [index_graph.cpp](https://github.com/ZJULearning/efanna_graph/blob/master/src/index_graph.cpp)
+- RNGG
+    - Builds a random graph that allows for fast and basic testing and evaluation
+- Selectors 
+    - Random, Flooding, FloodingRepeat, Hubs
+    - See file for more information on the different selectors and their relevance
+- `src/utils`
+    - Utility, primarily for evaluation
+- `src/py`
+    - Collective folder and exports to generate the Python binding *hsgf*
+    - /benches/bench.py can be seen as a unit tester for the Python binding *hsgf*
+
 
 ## Dev Notes
 - `cargo test` can not be successfully run if the default features include pyo3 (not the case here)
