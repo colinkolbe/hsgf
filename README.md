@@ -1,8 +1,38 @@
 # Hierarchical Search Graph Framework (HSGF)
 
-The Hierarchical Search Graph Framework (HSGF) is the main contribution of a master thesis at the Data Mining Group at TU Dortmund (2025). HSGF allows to extend existing approximate nearest neighbor search (ANNS) graphs with a hierarchy architecture and corresponding redundancy to improve their search performance in terms of recall and queries-per-second (QPS).
+The Hierarchical Search Graph Framework (HSGF) is the main contribution of a master's thesis at the Data Mining Group at TU Dortmund (2025). HSGF allows for extending existing approximate nearest neighbor search (ANNS) graphs with a hierarchy architecture and corresponding redundancy to improve their search performance in terms of recall and queries-per-second (QPS).
 
-This project is build on the framework that is the GraphIndexAPI crate and follows closely the patterns of GraphIndexBaselines crate and can, therefore, be seen as an extension to the latter.
+This project is built on the framework that is the [GraphIndexAPI](https://github.com/eth42/GraphIndexAPI) crate, follows closely the patterns of the [GraphIndexBaselines](https://github.com/eth42/GraphIndexBaselines) crate, and can, therefore, be seen as an extension to the latter.
+
+## Research Findings - Quick overview 
+
+We find positive effects from the hierarchy architecture for a HSGF graph which uses a DEG graph on all its levels which can seen in Figure 1 by the red curve for the higher level which is more to the top right in the plot then the search performance curve for its bottom level, which corresponds to "just" the DEG graph itself. The bottom curve for the HNSW graph is irrelevant in this view, as the upper blue curve corresponds to the search performance "normally" measured for an HNSW graph. Given the shorter construction time of the DEG graph compared to the HNSW graph on the full dataset and the substantially smaller subset sizes for the graphs on the higher levels (which induce the hierarchy architecture and redundancy itself; see Table 1), the HSGF shows that the search performance of a base graph can be boosted by extending it with a hierarchy design.
+
+The hierarchy effect on the search performance shows (expectedly) less strong for $ef_{bottom} >> k$ and has smaller to no effects for very sparse graphs, e.g., RNN-Descent or NSSG as well as datasets with a high local intrinsic dimensionality, e.g., GLOVE-100.
+
+![hsgf_deg_hnsw_compare_k_1_laion_10m](./assets/hsgf_deg_hnsw_compare_k_1_laion_10m.svg)
+
+Figure 1: QPS over Recall for the HSGF-DEG-Flooding=2-Flooding=1 vs. HNSW graphs on the LAION-10M dataset for $k$=1, $e\!f_{higher}$=1 and different $e\!f_{bottom}$=[10, 20, 30, 50, 100]. For each graph, the lower curve
+shows the search started only from the bottom level, and the upper curve shows the search
+started from the top level. 
+
+
+| Level | HSGF-DEG-Flooding=2-Flooding=1 | HSGF-DEG-Random | HNSW |
+|-|-|-|-|
+| Graph 0      | 2624.48 s                   | 2665.97 s | /       |
+| Subset 1     | 70.62 ms                    | 1.01 ms   | /       |
+| Graph 1      | 3.74 s                      | 4.08 s    | /       |
+| Subset 2     | 1.40 ms                     | 59.77 µs  | /       |
+| Graph 2      | 93.86 ms                    | 92.52 ms  | /       |
+| Subset 3     | 239.58 µs                   | 7.94 µs   | /       |
+| Graph 3      | 5.14 ms                     | 5.25 ms   | /       |
+| Subset 4     | 90.41 µs                    | 2.26 µs   | /       |
+| Graph 4      | /                           | 218.53 µs | /       |
+| Overall Time | 2724 s                      | 2777 s    | 10834 s |
+| Subset Sizes | [10120191, 33811, 2540, 191] | [10120191, 35000, 2500, 200, 30] | [10120191, 337332, 11256, 353, 16] |
+
+Table 1: HSGF-DEG build information on the LAION-10M dataset (which consists of 10,120,191 vectors). Both graphs have been built with the same level graph parameters of the DEG with an out-degree=50 and $e\!f_{construction}{=}100$. Note the different time scales and that the level starts at index zero; consequently, the first subset is for level one.
+
 
 ## Contents
 
@@ -10,12 +40,12 @@ This project is build on the framework that is the GraphIndexAPI crate and follo
     - hsgf code
     - See more information further down in this README
 - `/GraphIndexAPI`
-    - Uses a fork of the external library [GitHub](https://github.com/eth42/GraphIndexAPI)
+    - Uses a fork of the external library from [GitHub](https://github.com/eth42/GraphIndexAPI)
         - Current diff is virtually zero
     - Some useful explainers
         - WUnDirLoLGraph: Weighted Un-Directed List-of-List Graph
 - `/GraphIndexBaselines`
-    - Uses a fork of the external library [GitHub](https://github.com/eth42/GraphIndexBaselines)
+    - Uses a fork of the external library from [GitHub](https://github.com/eth42/GraphIndexBaselines)
         - Current diff is virtually zero
 - `/evaluation`
     - Evaluation related files (see local README)
@@ -24,7 +54,6 @@ This project is build on the framework that is the GraphIndexAPI crate and follo
 
 - Pyo3 with [maturin](https://www.maturin.rs/) to build the _hsgf_ Python module/binding
 ```bash
-# in ./src
 python3 -m venv .env
 source .env/bin/activate
 pip install -r py_requirements.txt
@@ -49,16 +78,16 @@ maturin develop
     - One trait definition for the HSGFStyleBuilder, which can be either an Enum- or a ClosureStyleBuilder
     
 - DEG
-    - Reimplementation of [GitHub](https://github.com/Visual-Computing/DynamicExplorationGraph/)
+    - Reimplementation from here [GitHub](https://github.com/Visual-Computing/DynamicExplorationGraph/)
     - Based on the main branch, specifically commit `305e121`
         - Specifically relevant for the re-implementation is [builder.h](https://github.com/Visual-Computing/DynamicExplorationGraph/blob/main/cpp/deglib/include/builder.h)
         - Important, this corresponds to the latest version of the DEG by the authors, and not the later renamed (and original) crEG implementation. However, we expect the latest version to also be the most performant.
 - (N)SSG
-    - Reimplementation of [GitHub](https://github.com/ZJULearning/SSG/)
+    - Reimplementation from here [GitHub](https://github.com/ZJULearning/SSG/)
     - Based on the master branch, specifically commit `f573041`
         - Specifically relevant for the re-implementation is [index_ssg.cpp](https://github.com/ZJULearning/SSG/blob/master/src/index_ssg.cpp)
 - Efanna 
-    - Reimplementation of [GitHub](https://github.com/ZJULearning/efanna_graph)
+    - Reimplementation from here [GitHub](https://github.com/ZJULearning/efanna_graph)
     - Based on the master branch, specifically commit `50c4445`
         - Specifically relevant for the re-implementation is [index_graph.cpp](https://github.com/ZJULearning/efanna_graph/blob/master/src/index_graph.cpp)
 - RNGG
@@ -82,13 +111,12 @@ maturin develop
 
 - VS Code
     - The following makes the rust-analyzer in VS Code analyze files that are behind a particular feature flag
-        - Settings: "rust-analyzer.cargo.features": ["python"]
+        - Settings: "rust-analyzer.cargo.features": ["<FEATURE>"]
     - Nice highlighting for TOML files
         - "[toml]": {"editor.defaultFormatter": "tamasfe.even-better-toml"}
 
 - Useful aliases and functions
 ```bash
-
 alias senv="source .env/bin/activate"
 alias mdev="maturin develop"
 
